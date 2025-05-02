@@ -1,3 +1,27 @@
 KolibriOS syscalls for rust. 
 
 Use macro `syscall!(&mut eax, &mut ebx, ..)`
+
+Example:
+```
+fn kolibrios_exit() -> ! {
+    unsafe {
+        syscall!(&mut -1);
+    }
+}
+```
+
+Using returned value(s):
+```
+use core::ffi::c_void;
+unsafe fn malloc(mut size: u32) -> *mut c_void {
+    //            ^----- is not actually mutated
+
+    let mut eax = 68; //Function number
+    unsafe {
+        // Sysfunc 68.12, allocate memory block
+        syscall!(&mut eax, &mut 12, &mut size)
+    }
+    eax as *mut c_void
+}
+```
