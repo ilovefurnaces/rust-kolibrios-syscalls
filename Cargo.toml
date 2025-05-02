@@ -3,4 +3,13 @@ name = "kolibrios-syscalls"
 version = "0.1.0"
 edition = "2024"
 
+description = "Running KolibriOS sysfuncs/syscalls from Rust"
+license = "MIT"
+license-file = "license.md"
+keywords = ["kolibrios", "syscall"]
+repository = "https://github.com/ilovefurnaces/rust-kolibrios-syscalls"
+
+publish = ["kolibrios-syscalls"]
+
+
 [dependencies]
