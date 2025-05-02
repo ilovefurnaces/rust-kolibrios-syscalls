@@ -9,7 +9,5 @@ license-file = "license.md"
 keywords = ["kolibrios", "syscall"]
 repository = "https://github.com/ilovefurnaces/rust-kolibrios-syscalls"
 
-publish = ["kolibrios-syscalls"]
-
 
 [dependencies]
