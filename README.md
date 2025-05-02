@@ -1,2 +1,3 @@
 KolibriOS syscalls for rust. 
-Use syscall!(&mut eax, &mut ebx, ..) 
+
+Use macro `syscall!(&mut eax, &mut ebx, ..)`
