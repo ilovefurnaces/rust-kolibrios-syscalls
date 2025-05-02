@@ -30,7 +30,8 @@ Hello world: (will write to debug board)
 ```rust
 let string = "hello world";
 for i in string.bytes() {
-unsafe {
-    syscall!(&mut 63, &mut 1, &mut (i as u32))
-};
+    unsafe {
+        syscall!(&mut 63, &mut 1, &mut (i as u32))
+    };
+}
 ```
