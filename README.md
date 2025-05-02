@@ -3,7 +3,7 @@ KolibriOS syscalls for rust.
 Use macro `syscall!(&mut eax, &mut ebx, ..)`
 
 Example:
-```
+```rust
 fn kolibrios_exit() -> ! {
     unsafe {
         syscall!(&mut -1);
@@ -12,7 +12,7 @@ fn kolibrios_exit() -> ! {
 ```
 
 Using returned value(s):
-```
+```rust
 use core::ffi::c_void;
 unsafe fn malloc(mut size: u32) -> *mut c_void {
     //            ^----- is not actually mutated
