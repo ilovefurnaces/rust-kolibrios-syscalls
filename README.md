@@ -33,5 +33,4 @@ for i in string.bytes() {
 unsafe {
     syscall!(&mut 63, &mut 1, &mut (i as u32))
 };
-}
 ```
