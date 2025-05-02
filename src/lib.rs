@@ -1,5 +1,4 @@
 #![no_std]
-#![cfg(target_arch="x86")]
 
 mod raw;
 pub use raw::*;
