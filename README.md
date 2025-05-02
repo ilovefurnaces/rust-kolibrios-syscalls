@@ -1,6 +1,6 @@
 KolibriOS syscalls for rust. 
 
-Use macro `syscall!(&mut eax, &mut ebx, ..)`
+Use macro `syscall!(&mut eax, &mut ebx, ..)`.
 
 Example:
 ```rust
@@ -23,5 +23,15 @@ unsafe fn malloc(mut size: u32) -> *mut c_void {
         syscall!(&mut eax, &mut 12, &mut size)
     }
     eax as *mut c_void
+}
+```
+
+Hello world: (will write to debug board)
+```rust
+let string = "hello world";
+for i in string.bytes() {
+unsafe {
+    syscall!(&mut 63, &mut 1, &mut (i as u32))
+};
 }
 ```
