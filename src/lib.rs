@@ -1,4 +1,5 @@
 #![no_std]
+#![cfg(any(target_arch = "x86", doc))]
 
 mod raw;
 pub use raw::*;
