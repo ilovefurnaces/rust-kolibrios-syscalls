@@ -21,7 +21,7 @@ unsafe fn malloc(mut size: u32) -> *mut c_void {
     unsafe {
         // Sysfunc 68.12, allocate memory block
         syscall!(&mut eax, &mut 12, &mut size)
-    }
+    };
     eax as *mut c_void
 }
 ```
