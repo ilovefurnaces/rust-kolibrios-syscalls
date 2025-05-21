@@ -1,5 +1,7 @@
 KolibriOS syscalls for rust. 
 
+Does not work for now. It sometimes works and sometimes not because of the asm! things.  I will try to fix that.
+
 Use macro `syscall!(&mut eax, &mut ebx, ..)`.
 
 Example:
