@@ -11,14 +11,16 @@ pub use raw::*;
 ///
 
 
-/// Runs a sysfunc (syscall). Doesn't have a return value, instead mutates the arguments. That's because some (at least two) kolibriOS sysfunctions mutate many registers at once.
-/// First argument (eax, function number) is a &mut i32, all others are &mut u32.
+/// Runs a sysfunc (syscall). All arguments are u32: argument 1 is eax, 2 is ebx, 3 is ecx, etc.
+/// Returns (u32, u32) with (eax, ebx).
+///
 ///
 /// Example:
 /// ```rust
 /// fn kolibrios_exit() -> ! {
 ///     unsafe {
-///         syscall!(&mut -1);
+///         syscall!(u32::MAX);
+///         unreachable!()
 ///     }
 /// }
 /// ```
@@ -26,13 +28,12 @@ pub use raw::*;
 /// Using returned value(s):
 /// ```rust
 /// use core::ffi::c_void;
-/// unsafe fn malloc(mut size: u32) -> *mut c_void {
-///     //            ^----- is not actually mutated
+/// unsafe fn malloc(size: u32) -> *mut c_void {
 ///
-///     let mut eax = 68; //Function number
+///     let eax; 
 ///     unsafe {
 ///         // Sysfunc 68.12, allocate memory block
-///         syscall!(&mut eax, &mut 12, &mut size)
+///         eax = syscall!(68, 12, size).0
 ///     }
 ///     eax as *mut c_void
 /// }
@@ -41,33 +42,33 @@ pub use raw::*;
 macro_rules! syscall {
     ($eax:expr) => {
         $crate::syscall1(
-            $eax,
+            $eax as u32,
         )
     };
 
 
     ($eax:expr, $ebx:expr) => {
         $crate::syscall2(
-            $eax,
-            $ebx,
+            $eax as u32,
+            $ebx as u32,
         )
     };
 
     ($eax:expr, $ebx:expr, $ecx:expr) => {
         $crate::syscall3(
-            $eax,
-            $ebx,
-            $ecx,
+            $eax as u32,
+            $ebx as u32,
+            $ecx as u32,
         )
     };
 
 
     ($eax:expr, $ebx:expr, $ecx:expr, $edx:expr) => {
         $crate::syscall4(
-            $eax,
-            $ebx,
-            $ecx,
-            $edx,
+            $eax as u32,
+            $ebx as u32,
+            $ecx as u32,
+            $edx as u32,
         )
     };
 
@@ -75,34 +76,34 @@ macro_rules! syscall {
     ($eax:expr, $ebx:expr, $ecx:expr, $edx:expr, $esi:expr) => {
 
         $crate::syscall5(
-            $eax,
-            $ebx,
-            $ecx,
-            $edx,
-            $esi,
+            $eax as u32,
+            $ebx as u32,
+            $ecx as u32,
+            $edx as u32,
+            $esi as u32,
         )
     };
 
     ($eax:expr, $ebx:expr, $ecx:expr, $edx:expr, $esi:expr, $edi:expr) => {
         $crate::syscall6(
-            $eax,
-            $ebx,
-            $ecx,
-            $edx,
-            $esi,
-            $edi,
+            $eax as u32,
+            $ebx as u32,
+            $ecx as u32,
+            $edx as u32,
+            $esi as u32,
+            $edi as u32,
         )
     };
 
     ($eax:expr, $ebx:expr, $ecx:expr, $edx:expr, $esi:expr, $edi:expr, $ebp:expr) => {
         $crate::syscall7(
-            $eax,
-            $ebx,
-            $ecx,
-            $edx,
-            $esi,
-            $edi,
-            $ebp,
+            $eax as u32,
+            $ebx as u32,
+            $ecx as u32,
+            $edx as u32,
+            $esi as u32,
+            $edi as u32,
+            $ebp as u32,
         )
     };
 

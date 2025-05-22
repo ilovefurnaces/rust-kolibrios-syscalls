@@ -1,6 +1,6 @@
 [package]
 name = "kolibrios-syscalls"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 
 description = "Running KolibriOS sysfuncs/syscalls from Rust"

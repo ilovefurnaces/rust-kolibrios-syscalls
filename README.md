@@ -1,39 +1,41 @@
-KolibriOS syscalls for rust. 
+## KolibriOS syscalls for rust. 
 
-Does not work for now. It sometimes works and sometimes not because of the asm! things.  I will try to fix that.
+Use macro `syscall!(eax: u32, ebx: u32, ..) -> (u32, u32)`.
+Macro returns (eax, ebx).
 
-Use macro `syscall!(&mut eax, &mut ebx, ..)`.
+## Examples
 
-Example:
+### Exit:
 ```rust
 fn kolibrios_exit() -> ! {
     unsafe {
-        syscall!(&mut -1);
+        syscall!(u32::MAX);
+        unreachable!()
     }
 }
 ```
 
-Using returned value(s):
+### Using returned value(s):
 ```rust
 use core::ffi::c_void;
-unsafe fn malloc(mut size: u32) -> *mut c_void {
-    //            ^----- is not actually mutated
+/// Allocates x pages so that x*page_size > size
+unsafe fn alloc(size: u32) -> *mut c_void {
 
-    let mut eax = 68; //Function number
+    let eax; 
     unsafe {
         // Sysfunc 68.12, allocate memory block
-        syscall!(&mut eax, &mut 12, &mut size)
+        eax = syscall!(68, 12, size).0;
     };
     eax as *mut c_void
 }
 ```
 
-Hello world: (will write to debug board)
+### Hello World: (will write to debug board)
 ```rust
 let string = "hello world";
 for i in string.bytes() {
     unsafe {
-        syscall!(&mut 63, &mut 1, &mut (i as u32))
+        syscall!(63, 1, i);
     };
 }
 ```

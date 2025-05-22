@@ -1,107 +1,102 @@
 use core::arch::asm;
 
 #[inline]
-pub unsafe fn syscall1(eax: &mut i32) {
+pub unsafe fn syscall1(mut eax: u32) -> (u32, u32) {
+    let ebx;
     unsafe {
         asm!(
             "int 0x40",
-            inout("eax") *eax,
+            inlateout("eax") eax,
+            out("ebx") ebx, 
         )
     }
+    (eax, ebx)
 }
 
 #[inline]
-pub unsafe fn syscall2(eax: &mut i32, ebx: &mut u32) {
+pub unsafe fn syscall2(mut eax: u32, mut ebx: u32) -> (u32, u32) {
     unsafe {
             asm!(
             "int 0x40",
-            inout("eax") *eax,
-            inout("ebx") *ebx,
+            inlateout("eax") eax,
+            inlateout("ebx") ebx,
         )
     }
+    (eax, ebx)
 }
 
 #[inline]
-pub unsafe fn syscall3(eax: &mut i32, ebx: &mut u32, ecx: &mut u32) {
+pub unsafe fn syscall3(mut eax: u32, mut ebx: u32, ecx: u32) -> (u32, u32) {
     unsafe { asm!(
         "int 0x40",
-        inout("eax") *eax,
-        inout("ebx") *ebx,
-        inout("ecx") *ecx
+        inlateout("eax") eax,
+        inlateout("ebx") ebx,
+        in("ecx") ecx
     ) }
+    (eax, ebx)
 }
 
 #[inline]
-pub unsafe fn syscall4(eax: &mut i32, ebx: &mut u32, ecx: &mut u32, edx: &mut u32) {
+pub unsafe fn syscall4(mut eax: u32, mut ebx: u32, ecx: u32, edx: u32) -> (u32, u32) {
     unsafe { asm!(
         "int 0x40",
-        inout("eax") *eax,
-        inout("ebx") *ebx,
-        inout("ecx") *ecx,
-        inout("edx") *edx,
+        inlateout("eax") eax,
+        inlateout("ebx") ebx,
+        in("ecx") ecx,
+        in("edx") edx,
     ) }
+    (eax, ebx)
 }
 
 #[inline]
-pub unsafe fn syscall5(eax: &mut i32, ebx: &mut u32, ecx: &mut u32, edx: &mut u32, esi: &mut u32) {
+pub unsafe fn syscall5(mut eax: u32, mut ebx: u32, ecx: &mut u32, edx: &mut u32, esi: &mut u32) -> (u32, u32) {
+    unsafe { asm!(
+        "xchg esi, {esi}",
+        "int 0x40",
+        "xchg {esi}, esi",
+        inlateout("eax") eax,
+        inlateout("ebx") ebx,
+        in("ecx") ecx,
+        in("edx") edx,
+        esi = in(reg) esi, // llvm reserved
+    ) }
+    (eax, ebx)
+}
+
+#[inline]
+pub unsafe fn syscall6(mut eax: u32, mut ebx: u32, ecx: u32,
+                       edx: u32, esi: u32, edi: u32) -> (u32, u32) {
+    unsafe { asm!(
+        "xchg esi, {esi}",
+        "int 0x40",
+        "xchg {esi}, esi",
+        inlateout("eax") eax,
+        inlateout("ebx") ebx,
+        in("ecx") ecx,
+        in("edx") edx,
+        esi = in(reg) esi,
+        in("edi") edi,
+    ) }
+    (eax, ebx)
+}
+
+#[inline]
+pub unsafe fn syscall7(mut eax: u32, mut ebx: u32, ecx: u32, edx: u32,
+                       esi: u32, edi: u32, ebp: u32) -> (u32, u32) {
     unsafe { asm!(
         "push esi",
-        "mov esi, {esi}",
-        "int 0x40",
-        "mov {esi}, esi",
-        "pop esi",
-        inout("eax") *eax,
-        inout("ebx") *ebx,
-        inout("ecx") *ecx,
-        inout("edx") *edx,
-        esi = in(reg) *esi, // "llvm reserved"
-    ) }
-}
-
-#[inline]
-pub unsafe fn syscall6(eax: &mut i32, ebx: &mut u32, ecx: &mut u32, edx: &mut u32, esi: &mut u32, edi: &mut u32) {
-    unsafe { asm!(
-        "push esi",
-        "push edi",
-        "mov esi, {esi}",
-        "mov edi, {edi}",
-        "int 0x40",
-        "mov {esi}, esi",
-        "mov {edi}, edi",
-        "pop edi",
-        "pop esi",
-        inout("eax") *eax,
-        inout("ebx") *ebx,
-        inout("ecx") *ecx,
-        inout("edx") *edx,
-        esi = inout(reg) *esi,
-        edi = inout(reg) *edi,
-    ) }
-}
-
-#[inline]
-pub unsafe fn syscall7(func: &mut i32, ebx: &mut u32, ecx: &mut u32, edx: &mut u32,
-                        esi: &mut u32, edi: &mut u32, ebp: &mut u32) {
-    unsafe { asm!(
-        "push esi",
-        "push edi",
         "push ebp",
-        "mov esi, {esi}",
-        "mov edi, {edi}",
-        "mov ebp, {ebp}",
+        "mov esi, DWORD PTR [ecx + 0]", // set esi
+        "mov ebp, DWORD PTR [ecx + 4]", // set ebp
+        "mov ecx, DWORD PTR [ecx + 8]", // set ecx
         "int 0x40",
-        "mov {esi}, esi",
-        "mov {edi}, edi",
-        "mov {ebp}, ebp",
         "pop ebp",
-        "pop edi",
         "pop esi",
-        inout("eax") *func,
-        inout("ebx") *ebx,
-        inout("ecx") *ecx,
-        inout("edx") *edx,
-        esi = inout(reg) *esi,
-        edi = inout(reg) *edi,
-        ebp = inout(reg) *ebp,
+        inlateout("eax") eax,
+        inlateout("ebx") ebx,
+        in("ecx") &[esi, ebp, ecx],
+        in("edx") edx,
+        in("edi") edi,
     ) }
+    (eax, ebx)
 }
